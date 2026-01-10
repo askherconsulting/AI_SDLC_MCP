@@ -3,3 +3,5 @@ node_modules/
 *.log
 .DS_Store
 .cursor/mcp.json
+uploads/*
+!uploads/.gitkeep
