@@ -262,7 +262,12 @@ app.post('/pictures/upload', upload.single('picture'), (req, res) => {
   res.redirect('/pictures');
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Export for Vercel serverless functions
+module.exports = app;
+
+// Start server locally (only if not in Vercel environment)
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
