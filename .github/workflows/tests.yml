@@ -1,0 +1,48 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    
+    - name: Start server
+      run: npm start &
+      env:
+        PORT: 3000
+    
+    - name: Wait for server to be ready
+      run: |
+        timeout=30
+        counter=0
+        until curl -f http://localhost:3000/health || [ $counter -eq $timeout ]; do
+          sleep 1
+          counter=$((counter+1))
+        done
+        if [ $counter -eq $timeout ]; then
+          echo "Server failed to start within $timeout seconds"
+          exit 1
+        fi
+    
+    - name: Run tests
+      run: npx playwright test
