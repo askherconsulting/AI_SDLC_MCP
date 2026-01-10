@@ -1,6 +1,6 @@
 # AI SDLC MCP
 
-A minimal Node + Express web application with a health check endpoint.
+A minimal Node + Express web application with a health check endpoint. Created in under an hour.
 
 ## Setup
 
