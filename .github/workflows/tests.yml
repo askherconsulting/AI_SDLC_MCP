@@ -63,10 +63,18 @@ jobs:
           exit 1
         fi
     
+    - name: Start virtual display for Vibium
+      run: |
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        sleep 2
+        echo "Virtual display started"
+    
     - name: Run all tests (Playwright and Vibium)
       run: npm run test:all
-      timeout-minutes: 10
+      timeout-minutes: 3
       env:
         CI: 'true'
         GITHUB_ACTIONS: 'true'
         CLICKER_PATH: ${{ env.CLICKER_PATH }}
+        DISPLAY: ':99'

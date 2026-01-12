@@ -14,7 +14,7 @@ describe('Homepage (Vibium)', () => {
     }
     
     // Launch browser with timeout and headless mode (auto-detected in CI)
-    vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 10000 });
+    vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 30000 });
   });
 
   after(async () => {
