@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "tsx --test --test-concurrency=1 tests/**/*.spec.ts"
+    "test": "tsx --test --test-concurrency=1 tests/**/*.spec.ts",
+    "test:playwright": "tsx --test --test-concurrency=1 tests/playwright/**/*.spec.ts",
+    "test:vibium": "tsx --test --test-concurrency=1 tests/vibium/**/*.spec.ts",
+    "test:all": "npm run test:playwright && npm run test:vibium"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,7 @@
   },
   "devDependencies": {
     "tsx": "^4.7.0",
-    "@types/node": "^20.10.0"
+    "@types/node": "^20.10.0",
+    "playwright": "^1.40.0"
   }
 }

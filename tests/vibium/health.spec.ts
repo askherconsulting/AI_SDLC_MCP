@@ -1,9 +1,9 @@
 import { test, describe, before, after } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { browser } from 'vibium';
-import { checkServerRunning, printServerNotRunningMessage } from './helpers';
+import { checkServerRunning, printServerNotRunningMessage } from '../helpers';
 
-describe('Health Endpoint', () => {
+describe('Health Endpoint (Vibium)', () => {
   let vibe: Awaited<ReturnType<typeof browser.launch>>;
 
   before(async () => {

@@ -3,9 +3,9 @@ import { strict as assert } from 'node:assert';
 import { browser } from 'vibium';
 import * as fs from 'fs';
 import * as path from 'path';
-import { checkServerRunning, printServerNotRunningMessage } from './helpers';
+import { checkServerRunning, printServerNotRunningMessage } from '../helpers';
 
-describe('Pictures Page - Issue #1', () => {
+describe('Pictures Page - Issue #1 (Vibium)', () => {
   let vibe: Awaited<ReturnType<typeof browser.launch>>;
 
   before(async () => {
@@ -114,7 +114,7 @@ describe('Pictures Page - Issue #1', () => {
     await vibe.go('http://localhost:3000/pictures');
     
     // Create a test image file
-    const testImagePath = path.join(__dirname, '../test-image.png');
+    const testImagePath = path.join(__dirname, '../../test-image.png');
     const testImageBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
     fs.writeFileSync(testImagePath, testImageBuffer);
     

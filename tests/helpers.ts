@@ -49,3 +49,20 @@ export function printServerNotRunningMessage(): void {
   console.error('  npm test');
   console.error('='.repeat(70) + '\n');
 }
+
+/**
+ * Print a helpful message if Playwright browsers are not installed
+ */
+export function printPlaywrightBrowserInstallMessage(): void {
+  console.error('\n' + '='.repeat(70));
+  console.error('⚠️  PLAYWRIGHT BROWSERS NOT INSTALLED');
+  console.error('='.repeat(70));
+  console.error('Playwright tests failed because the browser binaries are not installed.');
+  console.error('');
+  console.error('Please install Playwright browsers by running:');
+  console.error('  npx playwright install');
+  console.error('');
+  console.error('Then run the tests again:');
+  console.error('  npm run test:playwright');
+  console.error('='.repeat(70) + '\n');
+}

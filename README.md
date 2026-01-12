@@ -18,6 +18,46 @@ A minimal Node + Express web application with a health check endpoint. Created i
    - Main page: http://localhost:3000
    - Health check: http://localhost:3000/health
 
+## Testing
+
+This project supports testing with both **Playwright** and **Vibium** browser automation frameworks.
+
+### Running Tests
+
+**Run all tests (both frameworks):**
+```bash
+npm test
+```
+
+**Run only Playwright tests:**
+```bash
+npm run test:playwright
+```
+
+**Run only Vibium tests:**
+```bash
+npm run test:vibium
+```
+
+**Run both frameworks sequentially:**
+```bash
+npm run test:all
+```
+
+### First-Time Setup for Playwright
+
+If you encounter errors when running Playwright tests, you may need to install the browser binaries:
+
+```bash
+npx playwright install
+```
+
+The tests will automatically display a helpful message if browsers are not installed.
+
+> **Note:** The server must be running before executing tests. Start it with `npm start` in a separate terminal.
+
+For more details about the test structure, see [tests/README.md](tests/README.md).
+
 ## Endpoints
 
 - `GET /` - Simple welcome page
@@ -45,14 +85,6 @@ This project includes configurations for multiple MCP (Model Context Protocol) s
    - Type: `stdio`
    - Provides browser automation features
 
-4. **WordPress MCP Server**
-   - Package: `@modelcontextprotocol/server-wordpress`
-   - Command: `npx -y @modelcontextprotocol/server-wordpress`
-   - Environment Variables:
-     - `WORDPRESS_URL` (required - your WordPress site URL)
-     - `WORDPRESS_USERNAME` (required - your WordPress username)
-     - `WORDPRESS_APPLICATION_PASSWORD` (required - WordPress application password)
-
 ### Setup Instructions
 
 1. The configuration file (`.cursor/mcp.json`) is excluded from version control (see `.gitignore`) as it contains local development settings.
@@ -61,10 +93,6 @@ This project includes configurations for multiple MCP (Model Context Protocol) s
    - Create a GitHub Personal Access Token with appropriate permissions
    - Add the token to the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable in `.cursor/mcp.json`
 
-3. **For WordPress MCP Server:**
-   - Add your WordPress site URL, username, and application password to the respective environment variables in `.cursor/mcp.json`
-   - Note: Use an Application Password, not your regular WordPress password
-
-4. **Restart Cursor** after making any changes to the MCP configuration for the changes to take effect.
+3. **Restart Cursor** after making any changes to the MCP configuration for the changes to take effect.
 
 All MCP servers will be automatically available when using Cursor with MCP support.
