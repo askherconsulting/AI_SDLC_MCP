@@ -26,6 +26,25 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps chromium
     
+    - name: Install Vibium Clicker binary
+      run: npm install --save-dev @vibium/linux-x64
+    
+    - name: Set CLICKER_PATH for Vibium
+      run: echo "CLICKER_PATH=$(pwd)/node_modules/@vibium/linux-x64/clicker" >> $GITHUB_ENV
+    
+    - name: Verify clicker binary exists
+      run: |
+        CLICKER_PATH="$(pwd)/node_modules/@vibium/linux-x64/clicker"
+        if [ -f "$CLICKER_PATH" ]; then
+          echo "✓ Clicker binary found at: $CLICKER_PATH"
+          ls -la "$CLICKER_PATH"
+        else
+          echo "✗ Clicker binary not found at: $CLICKER_PATH"
+          echo "Checking node_modules..."
+          find node_modules -name "clicker" -type f 2>/dev/null || echo "No clicker binary found"
+          exit 1
+        fi
+    
     - name: Start server
       run: npm start &
       env:
@@ -50,4 +69,4 @@ jobs:
       env:
         CI: 'true'
         GITHUB_ACTIONS: 'true'
-        CLICKER_PATH: ./node_modules/@vibium/linux-x64/clicker
+        CLICKER_PATH: ${{ env.CLICKER_PATH }}
