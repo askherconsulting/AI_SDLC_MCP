@@ -105,39 +105,26 @@ export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: numb
     }
   };
   
-<<<<<<< HEAD
-  // Create a timeout promise with proper cleanup
-  let timeoutId: NodeJS.Timeout | null = null;
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => {
-=======
-  // Create a timeout promise
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
->>>>>>> c5bf19f39b219337eb03dc68618a3bb1a799a322
-      console.error(`[Vibium] Browser launch timed out after ${timeoutMs}ms`);
-      reject(new Error(`Vibium browser launch timed out after ${timeoutMs}ms. This may indicate browser installation issues or CI environment problems.`));
-    }, timeoutMs);
-  });
-  
-<<<<<<< HEAD
-  // Race between launch and timeout, with cleanup
-  try {
-    const result = await Promise.race([launchBrowser(), timeoutPromise]);
-    // Clear timeout if browser launched successfully
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    return result;
-  } catch (error) {
-    // Clear timeout on error
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    throw error;
+// Create a timeout promise with proper cleanup
+let timeoutId: NodeJS.Timeout | null = null;
+const timeoutPromise = new Promise<never>((_, reject) => {
+  timeoutId = setTimeout(() => {
+    console.error(`[Vibium] Browser launch timed out after ${timeoutMs}ms`);
+    reject(new Error(`Vibium browser launch timed out after ${timeoutMs}ms. This may indicate browser installation issues or CI environment problems.`));
+  }, timeoutMs);
+});
+
+// Race between launch and timeout, with cleanup
+try {
+  const result = await Promise.race([launchBrowser(), timeoutPromise]);
+  if (timeoutId) {
+    clearTimeout(timeoutId);
   }
-=======
-  // Race between launch and timeout
-  return Promise.race([launchBrowser(), timeoutPromise]);
->>>>>>> c5bf19f39b219337eb03dc68618a3bb1a799a322
+  return result;
+} catch (error) {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+  throw error;
+}
 }
