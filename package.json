@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "tsx --test tests/**/*.spec.ts"
+    "test": "tsx --test --test-concurrency=1 tests/**/*.spec.ts"
   },
   "keywords": [],
   "author": "",
