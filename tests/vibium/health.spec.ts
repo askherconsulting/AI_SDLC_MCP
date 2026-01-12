@@ -1,10 +1,9 @@
 import { test, describe, before, after } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { browser } from 'vibium';
-import { checkServerRunning, printServerNotRunningMessage } from '../helpers';
+import { checkServerRunning, printServerNotRunningMessage, launchVibiumBrowserWithTimeout } from '../helpers';
 
 describe('Health Endpoint (Vibium)', () => {
-  let vibe: Awaited<ReturnType<typeof browser.launch>>;
+  let vibe: Awaited<ReturnType<typeof import('vibium').browser.launch>>;
 
   before(async () => {
     // Check if server is running before starting tests
@@ -14,7 +13,8 @@ describe('Health Endpoint (Vibium)', () => {
       throw new Error('Server is not running. Please start it with: npm start');
     }
     
-    vibe = await browser.launch();
+    // Launch browser with timeout and headless mode (auto-detected in CI)
+    vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 10000 });
   });
 
   after(async () => {

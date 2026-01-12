@@ -46,3 +46,7 @@ jobs:
     
     - name: Run all tests (Playwright and Vibium)
       run: npm run test:all
+      timeout-minutes: 10
+      env:
+        CI: 'true'
+        GITHUB_ACTIONS: 'true'

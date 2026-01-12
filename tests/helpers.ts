@@ -66,3 +66,43 @@ export function printPlaywrightBrowserInstallMessage(): void {
   console.error('  npm run test:playwright');
   console.error('='.repeat(70) + '\n');
 }
+
+/**
+ * Launch Vibium browser with a timeout and optional headless mode
+ * @param options - Options for browser launch
+ * @param options.timeoutMs - Timeout in milliseconds (default: 10000)
+ * @param options.headless - Whether to run in headless mode (default: false, or true if CI environment detected)
+ * @returns Promise that resolves to the browser instance
+ */
+export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: number; headless?: boolean } = {}): Promise<Awaited<ReturnType<typeof import('vibium').browser.launch>>> {
+  const { browser } = await import('vibium');
+  const { timeoutMs = 10000, headless } = options;
+  
+  // Default to headless in CI environments
+  const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+  const shouldRunHeadless = headless !== undefined ? headless : isCI;
+  
+  // Try launching with headless option, fallback to no options if not supported
+  const launchBrowser = async () => {
+    try {
+      // Try with headless option first
+      return await browser.launch({ headless: shouldRunHeadless });
+    } catch (error: any) {
+      // If headless option is not supported, try without options
+      if (shouldRunHeadless && (error?.message?.includes('headless') || error?.code)) {
+        console.warn('Vibium may not support headless option, trying without it...');
+        return await browser.launch();
+      }
+      throw error;
+    }
+  };
+  
+  return Promise.race([
+    launchBrowser(),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Vibium browser launch timed out after ${timeoutMs}ms. This may indicate browser installation issues or CI environment problems.`));
+      }, timeoutMs);
+    })
+  ]);
+}
