@@ -24,7 +24,7 @@ jobs:
       run: npm ci
     
     - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium
     
     - name: Start server
       run: npm start &
@@ -44,5 +44,9 @@ jobs:
           exit 1
         fi
     
-    - name: Run tests
-      run: npx playwright test
+    - name: Run Playwright tests
+      run: npm run test:playwright
+      timeout-minutes: 3
+      env:
+        CI: 'true'
+        GITHUB_ACTIONS: 'true'
