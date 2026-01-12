@@ -76,33 +76,43 @@ export function printPlaywrightBrowserInstallMessage(): void {
  */
 export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: number; headless?: boolean } = {}): Promise<Awaited<ReturnType<typeof import('vibium').browser.launch>>> {
   const { browser } = await import('vibium');
-  const { timeoutMs = 10000, headless } = options;
+  const { timeoutMs = 30000, headless } = options; // Increased default timeout to 30 seconds
   
   // Default to headless in CI environments
   const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
   const shouldRunHeadless = headless !== undefined ? headless : isCI;
   
+  console.log(`[Vibium] Launching browser (headless: ${shouldRunHeadless}, timeout: ${timeoutMs}ms, CI: ${isCI})`);
+  
   // Try launching with headless option, fallback to no options if not supported
   const launchBrowser = async () => {
     try {
+      console.log('[Vibium] Attempting to launch browser...');
       // Try with headless option first
-      return await browser.launch({ headless: shouldRunHeadless });
+      const instance = await browser.launch({ headless: shouldRunHeadless });
+      console.log('[Vibium] Browser launched successfully');
+      return instance;
     } catch (error: any) {
+      console.error('[Vibium] Browser launch failed:', error.message);
       // If headless option is not supported, try without options
       if (shouldRunHeadless && (error?.message?.includes('headless') || error?.code)) {
         console.warn('Vibium may not support headless option, trying without it...');
-        return await browser.launch();
+        const instance = await browser.launch();
+        console.log('[Vibium] Browser launched successfully (without headless option)');
+        return instance;
       }
       throw error;
     }
   };
   
-  return Promise.race([
-    launchBrowser(),
-    new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Vibium browser launch timed out after ${timeoutMs}ms. This may indicate browser installation issues or CI environment problems.`));
-      }, timeoutMs);
-    })
-  ]);
+  // Create a timeout promise
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      console.error(`[Vibium] Browser launch timed out after ${timeoutMs}ms`);
+      reject(new Error(`Vibium browser launch timed out after ${timeoutMs}ms. This may indicate browser installation issues or CI environment problems.`));
+    }, timeoutMs);
+  });
+  
+  // Race between launch and timeout
+  return Promise.race([launchBrowser(), timeoutPromise]);
 }
