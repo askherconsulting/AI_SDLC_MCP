@@ -78,6 +78,31 @@ export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: numb
   const { browser } = await import('vibium');
   const { timeoutMs = 30000, headless } = options; // Increased default timeout to 30 seconds
   
+  // Set CLICKER_PATH if not already set
+  if (!process.env.CLICKER_PATH) {
+    const path = require('path');
+    const os = require('os');
+    const platform = os.platform();
+    
+    if (platform === 'win32') {
+      // Windows: look for clicker.exe
+      const clickerPath = path.join(process.cwd(), 'node_modules', '@vibium', 'win32-x64', 'bin', 'clicker.exe');
+      const fs = require('fs');
+      if (fs.existsSync(clickerPath)) {
+        process.env.CLICKER_PATH = clickerPath;
+        console.log(`[Vibium] Set CLICKER_PATH to: ${clickerPath}`);
+      }
+    } else if (platform === 'linux') {
+      // Linux: look for clicker
+      const clickerPath = path.join(process.cwd(), 'node_modules', '@vibium', 'linux-x64', 'bin', 'clicker');
+      const fs = require('fs');
+      if (fs.existsSync(clickerPath)) {
+        process.env.CLICKER_PATH = clickerPath;
+        console.log(`[Vibium] Set CLICKER_PATH to: ${clickerPath}`);
+      }
+    }
+  }
+  
   // Default to headless in CI environments
   const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
   const shouldRunHeadless = headless !== undefined ? headless : isCI;
