@@ -19,7 +19,12 @@ describe('Homepage (Vibium)', () => {
 
   after(async () => {
     if (vibe) {
-      await vibe.quit();
+      try {
+        await vibe.quit();
+        console.log('[Vibium] Browser closed successfully');
+      } catch (error) {
+        console.error('[Vibium] Error closing browser:', error);
+      }
     }
   });
 
