@@ -3,11 +3,19 @@ import { strict as assert } from 'node:assert';
 import { browser } from 'vibium';
 import * as fs from 'fs';
 import * as path from 'path';
+import { checkServerRunning, printServerNotRunningMessage } from './helpers';
 
 describe('Pictures Page - Issue #1', () => {
   let vibe: Awaited<ReturnType<typeof browser.launch>>;
 
   before(async () => {
+    // Check if server is running before starting tests
+    const serverRunning = await checkServerRunning();
+    if (!serverRunning) {
+      printServerNotRunningMessage();
+      throw new Error('Server is not running. Please start it with: npm start');
+    }
+    
     vibe = await browser.launch();
   });
 

@@ -1,11 +1,19 @@
 import { test, describe, before, after } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { browser } from 'vibium';
+import { checkServerRunning, printServerNotRunningMessage } from './helpers';
 
 describe('Homepage', () => {
   let vibe: Awaited<ReturnType<typeof browser.launch>>;
 
   before(async () => {
+    // Check if server is running before starting tests
+    const serverRunning = await checkServerRunning();
+    if (!serverRunning) {
+      printServerNotRunningMessage();
+      throw new Error('Server is not running. Please start it with: npm start');
+    }
+    
     vibe = await browser.launch();
   });
 
