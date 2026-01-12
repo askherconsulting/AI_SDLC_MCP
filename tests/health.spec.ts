@@ -1,36 +1,36 @@
-import { test, expect } from '@playwright/test';
+import { test, describe, afterEach } from 'node:test';
+import { strict as assert } from 'node:assert';
+import { browser } from 'vibium';
 
-test.describe('Health Endpoint', () => {
-  test.afterEach(async ({ page }) => {
+describe('Health Endpoint', () => {
+  let vibe: Awaited<ReturnType<typeof browser.launch>>;
+
+  afterEach(async () => {
     // Teardown: Close the browser after each test
-    await page.close();
+    if (vibe) {
+      await vibe.quit();
+      vibe = null as any;
+    }
   });
 
-  // Teardown: Runs after all tests in this suite complete
-  // Ensures browser cleanup after test suite
-  test.afterAll(async () => {
-    // Suite-level teardown - pages are already closed by afterEach
-  });
-
-  test('health endpoint is visible and returns correct status', async ({ page }) => {
-  // Navigate to the health endpoint
-  await page.goto('http://localhost:3000/health');
-  
-  // Verify the page URL
-  await expect(page).toHaveURL('http://localhost:3000/health');
-  
-  // Verify the JSON response is visible
-  const bodyText = await page.textContent('body');
-  expect(bodyText).toBeTruthy();
-  
-  // Parse and verify the JSON content
-  const jsonContent = JSON.parse(bodyText!);
-  expect(jsonContent).toHaveProperty('status');
-  expect(jsonContent.status).toBe('ok');
-  expect(jsonContent).toHaveProperty('timestamp');
-  expect(jsonContent.timestamp).toBeTruthy();
-  
-  // Verify the response contains the expected status text
-  await expect(page.locator('body')).toContainText('"status":"ok"');
+  test('health endpoint is visible and returns correct status', async () => {
+    vibe = await browser.launch();
+    
+    // Navigate to the health endpoint
+    await vibe.go('http://localhost:3000/health');
+    
+    // Verify the JSON response is visible
+    const bodyText = await vibe.evaluate<string>(() => document.body.textContent || '');
+    assert(bodyText.length > 0, 'Body text should not be empty');
+    
+    // Parse and verify the JSON content
+    const jsonContent = JSON.parse(bodyText);
+    assert(jsonContent.hasOwnProperty('status'), 'JSON should have status property');
+    assert.strictEqual(jsonContent.status, 'ok', 'Status should be "ok"');
+    assert(jsonContent.hasOwnProperty('timestamp'), 'JSON should have timestamp property');
+    assert(jsonContent.timestamp, 'Timestamp should be truthy');
+    
+    // Verify the response contains the expected status text
+    assert(bodyText.includes('"status":"ok"'), 'Body should contain "status":"ok"');
   });
 });

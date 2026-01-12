@@ -1,19 +1,24 @@
-import { test, expect } from '@playwright/test';
+import { test, describe, afterEach } from 'node:test';
+import { strict as assert } from 'node:assert';
+import { browser } from 'vibium';
 
-test.describe('Homepage', () => {
-  test.afterEach(async ({ page }) => {
+describe('Homepage', () => {
+  let vibe: Awaited<ReturnType<typeof browser.launch>>;
+
+  afterEach(async () => {
     // Teardown: Close the browser after each test
-    await page.close();
+    if (vibe) {
+      await vibe.quit();
+      vibe = null as any;
+    }
   });
 
-  // Teardown: Runs after all tests in this suite complete
-  // Ensures browser cleanup after test suite
-  test.afterAll(async () => {
-    // Suite-level teardown - pages are already closed by afterEach
-  });
-
-  test('homepage loads', async ({ page }) => {
-    await page.goto('http://localhost:3000');
-    await expect(page).toHaveTitle(/./);
+  test('homepage loads', async () => {
+    vibe = await browser.launch();
+    await vibe.go('http://localhost:3000');
+    
+    // Verify page loaded by checking title
+    const title = await vibe.evaluate<string>(() => document.title);
+    assert(title.length > 0, 'Page title should not be empty');
   });
 });
