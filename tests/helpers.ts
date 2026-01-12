@@ -103,18 +103,31 @@ export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: numb
     }
   }
   
-  // Default to headless in CI environments
+  // Default to headless mode for all tests (can be overridden by passing headless: false)
   const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
-  const shouldRunHeadless = headless !== undefined ? headless : isCI;
+  const shouldRunHeadless = headless !== undefined ? headless : true; // Always default to headless
   
-  console.log(`[Vibium] Launching browser (headless: ${shouldRunHeadless}, timeout: ${timeoutMs}ms, CI: ${isCI})`);
+  // Detect platform for Windows-specific sandbox workaround
+  const os = require('os');
+  const platform = os.platform();
+  const isWindows = platform === 'win32';
+  
+  console.log(`[Vibium] Launching browser (headless: ${shouldRunHeadless}, timeout: ${timeoutMs}ms, CI: ${isCI}, platform: ${platform})`);
   
   // Try launching with headless option, fallback to no options if not supported
   const launchBrowser = async () => {
     try {
       console.log('[Vibium] Attempting to launch browser...');
-      // Try with headless option first
-      const instance = await browser.launch({ headless: shouldRunHeadless });
+      
+      // On Windows, disable sandbox to avoid permission errors
+      const launchOptions: any = { headless: shouldRunHeadless };
+      if (isWindows) {
+        // Disable Chrome sandbox on Windows to avoid permission errors
+        launchOptions.args = ['--no-sandbox', '--disable-setuid-sandbox'];
+        console.log('[Vibium] Disabling Chrome sandbox on Windows');
+      }
+      
+      const instance = await browser.launch(launchOptions);
       console.log('[Vibium] Browser launched successfully');
       return instance;
     } catch (error: any) {
@@ -122,7 +135,11 @@ export async function launchVibiumBrowserWithTimeout(options: { timeoutMs?: numb
       // If headless option is not supported, try without options
       if (shouldRunHeadless && (error?.message?.includes('headless') || error?.code)) {
         console.warn('Vibium may not support headless option, trying without it...');
-        const instance = await browser.launch();
+        const launchOptions: any = {};
+        if (isWindows) {
+          launchOptions.args = ['--no-sandbox', '--disable-setuid-sandbox'];
+        }
+        const instance = await browser.launch(launchOptions);
         console.log('[Vibium] Browser launched successfully (without headless option)');
         return instance;
       }

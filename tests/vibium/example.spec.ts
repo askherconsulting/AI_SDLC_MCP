@@ -13,7 +13,7 @@ describe('Homepage (Vibium)', () => {
       throw new Error('Server is not running. Please start it with: npm start');
     }
     
-    // Launch browser with timeout and headless mode (auto-detected in CI)
+    // Launch browser with timeout and headless mode (always enabled by default)
     vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 30000 });
   });
 
