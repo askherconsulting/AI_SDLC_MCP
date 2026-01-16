@@ -170,18 +170,24 @@ describe('Pictures Page - Issue #1 (Playwright)', () => {
   });
 
   test('pictures page styling matches home page', async () => {
-    // Visit home page first and verify container exists
+    // Visit home page first and verify shared layout exists
     await page.goto('http://localhost:3000/');
-    const homeContainer = page.locator('.container');
-    await homeContainer.waitFor({ state: 'visible' });
-    assert(await homeContainer.count() > 0, 'Home page should have container element');
+    const homeShell = page.locator('.page-shell');
+    const homeHero = page.locator('.hero');
+    await homeShell.waitFor({ state: 'visible' });
+    await homeHero.waitFor({ state: 'visible' });
+    assert(await homeShell.count() > 0, 'Home page should have page shell element');
+    assert(await homeHero.count() > 0, 'Home page should have hero element');
     
-    // Visit pictures page and verify container exists
+    // Visit pictures page and verify shared layout exists
     await page.goto('http://localhost:3000/pictures');
-    const picturesContainer = page.locator('.container');
-    await picturesContainer.waitFor({ state: 'visible' });
-    assert(await picturesContainer.count() > 0, 'Pictures page should have container element');
+    const picturesShell = page.locator('.page-shell');
+    const picturesHero = page.locator('.hero');
+    await picturesShell.waitFor({ state: 'visible' });
+    await picturesHero.waitFor({ state: 'visible' });
+    assert(await picturesShell.count() > 0, 'Pictures page should have page shell element');
+    assert(await picturesHero.count() > 0, 'Pictures page should have hero element');
     
-    // Note: Verifying that both pages have the container element is sufficient
+    // Note: Verifying shared layout elements across pages is sufficient
   });
 });
