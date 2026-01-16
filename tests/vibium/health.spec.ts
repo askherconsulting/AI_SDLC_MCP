@@ -13,13 +13,18 @@ describe('Health Endpoint (Vibium)', () => {
       throw new Error('Server is not running. Please start it with: npm start');
     }
     
-    // Launch browser with timeout and headless mode (auto-detected in CI)
+    // Launch browser with timeout and headless mode (always enabled by default)
     vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 30000 });
   });
 
   after(async () => {
     if (vibe) {
-      await vibe.quit();
+      try {
+        await vibe.quit();
+        console.log('[Vibium] Browser closed successfully');
+      } catch (error) {
+        console.error('[Vibium] Error closing browser:', error);
+      }
     }
   });
 

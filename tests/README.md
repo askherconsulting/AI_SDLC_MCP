@@ -81,4 +81,5 @@ When adding new tests:
 
 - Both test suites verify the same functionality but use different APIs
 - Some tests may have framework-specific implementations due to API differences
+- UI checks validate shared layout elements (such as the `.page-shell` and `.hero` sections) across pages
 - The server must be running before executing tests (use `npm start` in a separate terminal)

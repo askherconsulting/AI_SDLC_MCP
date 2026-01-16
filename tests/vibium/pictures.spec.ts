@@ -15,13 +15,18 @@ describe('Pictures Page - Issue #1 (Vibium)', () => {
       throw new Error('Server is not running. Please start it with: npm start');
     }
     
-    // Launch browser with timeout and headless mode (auto-detected in CI)
+    // Launch browser with timeout and headless mode (always enabled by default)
     vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 30000 });
   });
 
   after(async () => {
     if (vibe) {
-      await vibe.quit();
+      try {
+        await vibe.quit();
+        console.log('[Vibium] Browser closed successfully');
+      } catch (error) {
+        console.error('[Vibium] Error closing browser:', error);
+      }
     }
   });
 
@@ -161,17 +166,21 @@ describe('Pictures Page - Issue #1 (Vibium)', () => {
   });
 
   test('pictures page styling matches home page', async () => {
-    // Visit home page first and verify container exists
+    // Visit home page first and verify shared layout exists
     await vibe.go('http://localhost:3000/');
-    const homeContainer = await vibe.find('.container');
-    assert(homeContainer, 'Home page should have container element');
+    const homeShell = await vibe.find('.page-shell');
+    const homeHero = await vibe.find('.hero');
+    assert(homeShell, 'Home page should have page shell element');
+    assert(homeHero, 'Home page should have hero element');
     
-    // Visit pictures page and verify container exists
+    // Visit pictures page and verify shared layout exists
     await vibe.go('http://localhost:3000/pictures');
-    const picturesContainer = await vibe.find('.container');
-    assert(picturesContainer, 'Pictures page should have container element');
+    const picturesShell = await vibe.find('.page-shell');
+    const picturesHero = await vibe.find('.hero');
+    assert(picturesShell, 'Pictures page should have page shell element');
+    assert(picturesHero, 'Pictures page should have hero element');
     
     // Note: Vibium's evaluate() for computed styles may not work the same as Playwright
-    // Verifying that both pages have the container element is sufficient
+    // Verifying shared layout elements across pages is sufficient
   });
 });

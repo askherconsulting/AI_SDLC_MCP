@@ -16,6 +16,7 @@ A minimal Node + Express web application with a health check endpoint. Created i
 
 3. Open your browser:
    - Main page: http://localhost:3000
+   - Pictures page: http://localhost:3000/pictures
    - Health check: http://localhost:3000/health
 
 ## Testing
@@ -60,7 +61,9 @@ For more details about the test structure, see [tests/README.md](tests/README.md
 
 ## Endpoints
 
-- `GET /` - Simple welcome page
+- `GET /` - Home dashboard with navigation and status summary
+- `GET /pictures` - Image gallery with upload form
+- `POST /pictures/upload` - Upload endpoint for image files
 - `GET /health` - Health check endpoint (returns JSON with status and timestamp)
 
 ## MCP Server Configuration
