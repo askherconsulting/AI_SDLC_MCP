@@ -385,10 +385,6 @@ app.get('/', (req, res) => {
               <h3>Monitor health</h3>
               <p>Hit the JSON endpoint to confirm the API is running before automated tests.</p>
             </div>
-            <div class="card">
-              <h3>Test workflows</h3>
-              <p>Drive the UI with Playwright or Vibium to verify navigation and upload readiness.</p>
-            </div>
           </div>
         </main>
       </div>
