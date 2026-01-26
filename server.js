@@ -5,6 +5,10 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enable strict routing to enforce exact path matching
+app.set('case sensitive routing', true);
+app.set('strict routing', true);
+
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
