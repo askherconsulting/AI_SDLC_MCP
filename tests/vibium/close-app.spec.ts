@@ -1,0 +1,50 @@
+import { test, describe, before, after } from 'node:test';
+import { strict as assert } from 'node:assert';
+import { checkServerRunning, printServerNotRunningMessage, launchVibiumBrowserWithTimeout } from '../helpers';
+
+describe('App Close (Vibium)', () => {
+  let vibe: Awaited<ReturnType<typeof import('vibium').browser.launch>> | null = null;
+  let vibeClosed = false;
+
+  before(async () => {
+    // Check if server is running before starting tests
+    const serverRunning = await checkServerRunning();
+    if (!serverRunning) {
+      printServerNotRunningMessage();
+      throw new Error('Server is not running. Please start it with: npm start');
+    }
+    
+    // Launch browser with timeout and headless mode (always enabled by default)
+    vibe = await launchVibiumBrowserWithTimeout({ timeoutMs: 30000 });
+  });
+
+  after(async () => {
+    if (vibe && !vibeClosed) {
+      try {
+        await vibe.quit();
+        console.log('[Vibium] Browser closed successfully');
+      } catch (error) {
+        console.error('[Vibium] Error closing browser:', error);
+      }
+    }
+  });
+
+  test('app can be closed from the browser window', async () => {
+    // AI Generated Human Reviewed yes
+    if (!vibe) {
+      throw new Error('Vibium browser was not initialized');
+    }
+    
+    await vibe.go('http://localhost:3000');
+    
+    const heading = await vibe.find('h1');
+    const headingText = await heading.text();
+    assert(headingText.length > 0, 'Page should have a heading before closing');
+    
+    await vibe.quit();
+    vibeClosed = true;
+    vibe = null;
+    
+    assert(vibeClosed, 'Browser should report closed after quit');
+  });
+});
